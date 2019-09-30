@@ -1,10 +1,10 @@
 {
-  "devToolsPort": 19003,
+  "devToolsPort": 19002,
   "expoServerPort": 19000,
-  "packagerPort": 19002,
-  "packagerPid": 13252,
-  "expoServerNgrokUrl": "https://7h-ip8.pivcec.prezzi.exp.direct",
-  "packagerNgrokUrl": "https://packager.7h-ip8.pivcec.prezzi.exp.direct",
-  "ngrokPid": 13281,
+  "packagerPort": 19001,
+  "packagerPid": 45622,
+  "expoServerNgrokUrl": "https://7h-ip8.pivcec.prezzi-frontend.exp.direct",
+  "packagerNgrokUrl": "https://packager.7h-ip8.pivcec.prezzi-frontend.exp.direct",
+  "ngrokPid": 45682,
   "webpackServerPort": null
 }

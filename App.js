@@ -1,6 +1,6 @@
 import React from "react";
-import Camera from "./src/components/Camera";
+import Main from "./src/components/Main";
 
 export default App = () => {
-  return <Camera />;
+  return <Main />;
 };
