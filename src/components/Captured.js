@@ -3,11 +3,14 @@ import { StyleSheet, Text, View } from "react-native";
 
 export default class CameraExample extends React.Component {
   render() {
-    return (
-      <View style={styles.container}>
-        <Text>hello</Text>
-      </View>
-    );
+    const {
+      navigation: {
+        state: {
+          params: { labels }
+        }
+      }
+    } = this.props;
+    return labels.map((label, i) => <Text key={i}>{label.description}</Text>);
   }
 }
 

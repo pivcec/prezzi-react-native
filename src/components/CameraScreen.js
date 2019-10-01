@@ -58,11 +58,16 @@ export default class CameraScreen extends React.Component {
         options
       );
       if (response) {
-        const text = await response.text();
-        console.warn("text", text);
+        const labels = await response.json();
+        this.setState(
+          {
+            capturedImageUri: null
+          },
+          () => this.props.navigation.navigate("Captured", { labels })
+        );
       }
     } catch (error) {
-      console.warn("Upload to OCR failed", error);
+      console.warn("Upload to bucket failed", error);
     }
   };
 
@@ -86,8 +91,15 @@ export default class CameraScreen extends React.Component {
   };
 
   render() {
-    const { hasCameraPermission, capturedImageUri } = this.state;
+    const { hasCameraPermission, capturedImageUri, labels } = this.state;
     const cameraOpacity = capturedImageUri ? 0.5 : 1;
+    /*
+    if (labels.length > 0) {
+      labels.forEach(label => {
+        console.warn("description", label.description);
+      });
+    }
+    */
     if (hasCameraPermission === null) {
       return <View />;
     } else if (hasCameraPermission === false) {
@@ -124,7 +136,7 @@ export default class CameraScreen extends React.Component {
                   name="camera-enhance"
                   type="material"
                   size={100}
-                  color="#517fa4"
+                  color="white"
                   onPress={() => {
                     this.handleCapturePress();
                   }}
@@ -135,7 +147,7 @@ export default class CameraScreen extends React.Component {
                   name="camera-enhance"
                   type="material"
                   size={100}
-                  color="white"
+                  color="grey"
                 />
               )}
             </View>
