@@ -3,14 +3,19 @@ import { createStackNavigator } from "react-navigation-stack";
 import CameraScreen from "./CameraScreen";
 import Captured from "./Captured";
 
-const RootStack = createStackNavigator({
-  Home: {
-    screen: CameraScreen
+const RootStack = createStackNavigator(
+  {
+    Home: {
+      screen: CameraScreen
+    },
+    Captured: {
+      screen: Captured
+    }
   },
-  Captured: {
-    screen: Captured
+  {
+    transitionConfig: () => ({ screenInterpolator: () => null })
   }
-});
+);
 
 const Main = createAppContainer(RootStack);
 

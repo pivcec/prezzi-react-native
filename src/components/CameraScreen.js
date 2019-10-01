@@ -1,5 +1,13 @@
 import React from "react";
-import { StyleSheet, ActivityIndicator, View, Text, Image } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  View,
+  Text,
+  Image,
+  Dimensions
+} from "react-native";
 import { Camera } from "expo-camera";
 import * as Permissions from "expo-permissions";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -8,12 +16,17 @@ import { Icon } from "react-native-elements";
 export default class CameraScreen extends React.Component {
   state = {
     hasCameraPermission: null,
+    isCapturing: false,
     capturedImageUri: null
   };
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === "granted" });
+    this.setState({
+      hasCameraPermission: status === "granted",
+      width: Dimensions.get("window").width,
+      height: Dimensions.get("window").height
+    });
   }
 
   getResizedImage = async uri => {
@@ -58,16 +71,23 @@ export default class CameraScreen extends React.Component {
         options
       );
       if (response) {
-        const labels = await response.json();
+        const texts = await response.json();
         this.setState(
           {
+            isCapturing: false,
             capturedImageUri: null
           },
-          () => this.props.navigation.navigate("Captured", { labels })
+          () => this.handleOcrResponse(texts)
         );
       }
     } catch (error) {
       console.warn("Upload to bucket failed", error);
+    }
+  };
+
+  handleOcrResponse = texts => {
+    if (texts[0]) {
+      this.props.navigation.navigate("Captured", { texts });
     }
   };
 
@@ -80,6 +100,9 @@ export default class CameraScreen extends React.Component {
 
   handleCapturePress = async () => {
     if (this.camera) {
+      this.setState({
+        isCapturing: true
+      });
       try {
         this.camera.takePictureAsync({
           onPictureSaved: this.onPictureSaved
@@ -91,15 +114,14 @@ export default class CameraScreen extends React.Component {
   };
 
   render() {
-    const { hasCameraPermission, capturedImageUri, labels } = this.state;
-    const cameraOpacity = capturedImageUri ? 0.5 : 1;
-    /*
-    if (labels.length > 0) {
-      labels.forEach(label => {
-        console.warn("description", label.description);
-      });
-    }
-    */
+    const {
+      hasCameraPermission,
+      isCapturing,
+      capturedImageUri,
+      width,
+      height
+    } = this.state;
+    const cameraOpacity = isCapturing ? 0.5 : 1;
     if (hasCameraPermission === null) {
       return <View />;
     } else if (hasCameraPermission === false) {
@@ -119,37 +141,31 @@ export default class CameraScreen extends React.Component {
           <View style={styles.imageAndButtonContainer}>
             <View style={styles.imageContainer}>
               {capturedImageUri && (
-                <>
-                  <Image
-                    source={{ uri: capturedImageUri }}
-                    style={styles.image}
-                  />
-                  <View style={styles.activityIndicator}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                  </View>
-                </>
-              )}
-            </View>
-            <View style={styles.button}>
-              {!capturedImageUri && (
-                <Icon
-                  name="camera-enhance"
-                  type="material"
-                  size={100}
-                  color="white"
-                  onPress={() => {
-                    this.handleCapturePress();
+                <Image
+                  source={{ uri: capturedImageUri }}
+                  style={{
+                    width: width,
+                    height: height
                   }}
                 />
               )}
-              {capturedImageUri && (
-                <Icon
-                  name="camera-enhance"
-                  type="material"
-                  size={100}
-                  color="grey"
-                />
+              {isCapturing && (
+                <View style={styles.activityIndicator}>
+                  <ActivityIndicator size="large" color="white" />
+                </View>
               )}
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => this.handleCapturePress()}>
+                {!isCapturing && (
+                  <Icon
+                    name="camera-enhance"
+                    type="material"
+                    size={100}
+                    color={"white"}
+                  />
+                )}
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -179,14 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  image: {
-    width: 250,
-    height: 250
-  },
   activityIndicator: {
     position: "absolute"
-  },
-  button: {
-    backgroundColor: "blue"
   }
 });

@@ -6,11 +6,11 @@ export default class CameraExample extends React.Component {
     const {
       navigation: {
         state: {
-          params: { labels }
+          params: { texts }
         }
       }
     } = this.props;
-    return labels.map((label, i) => <Text key={i}>{label.description}</Text>);
+    return <Text>{texts[0].description}</Text>;
   }
 }
 
